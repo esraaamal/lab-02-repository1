@@ -1,65 +1,91 @@
 `use strict`;
 
 let keywordArr = [];
-let productArr = []; 
-let userChoose = [];
+let productArr = [];
 
-$(function(){
 
-$.ajax({
+$(function () {
+  renderFirstTime();
+  $('#page').on('click',function(event){
+    let userClick = event.target.id;
+    if(userClick === 'pageOne'){
+      renderFirstTime();
+    }
+    else if(userClick === 'pageTwo'){
+      renderPageTwo();
+    }
+  })
+});
+
+
+
+function renderPageTwo() {
+  productArr = [];
+  keywordArr = [];
+  $('#filter').empty('');
+  $('#showImage').empty('');
+  $('#filter').append('<option>Filter By Keywords</option>');
+  $.ajax({
+    url: './data/page-2.json',
+    dataType: 'json',
+    success: (data => {
+      let product;
+      data.forEach(value => {
+        product = new Product(value.image_url, value.title, value.keyword, value.description, value.horns);
+        let renderedObj = product.render();
+        $('#showImage').append(renderedObj);
+      });
+      keywordArr.forEach(value => { product.renderOption(value); });
+      product.event1();
+      product.event2();
+    }),
+  });
+}
+
+function renderFirstTime() {
+  productArr = [];
+  keywordArr = [];
+  $('#filter').empty('');
+  $('#showImage').empty('');
+  $('#filter').append('<option>Filter By Keywords</option>');
+  $.ajax({
     url: './data/page-1.json',
     dataType: 'json',
-    success: (data =>{
-        let product;
-    
-        data.forEach( value =>{
-            product = new Product(value.image_url,value.title,value.keyword,value.description,value.horns);
-
-            product.render();
-
-        
-        });
-        // console.log(keywordArr);
-        keywordArr.forEach ( value => {product.renderOption(value);})
-        product.event1();
-        }),
-        
-});
-});
-
-function Product (filePath,title,keyWords,description,horns){
-    this.filePath = filePath;
-    this.title = title;
-    this.keyWords=keyWords ;
-    this.description =description ;
-    this.horns =horns ;
-    productArr.push(this);
-    if (keywordArr.includes(this.keyWords) === false){
-        keywordArr.push(this.keyWords);
-    }
-// console.log(keywordArr);
+    success: (data => {
+      let product;
+      data.forEach(value => {
+        product = new Product(value.image_url, value.title, value.keyword, value.description, value.horns);
+        let renderedObj = product.render();
+        $('#showImage').append(renderedObj);
+      });
+      keywordArr.forEach(value => { product.renderOption(value); });
+      product.event1();
+      product.event2();
+    }),
+  });
 }
 
-Product.prototype.render = function(){
-        let subDiv = $('<div class="append1"></div>');
-        let head1 =$("<h2></h2>").text(this.title);
-        let elem =$("<li></li>").html(`<img src="${this.filePath}">`);
-         let paragraph=$("<p></p>").text(this.description);
-        $('#showImage').append(subDiv);
-         $('.append1').append(head1);
-        $('.append1').append(elem);
-        $('.append1').append(paragraph);
-        subDiv.removeClass('append1');
-        $('img').height(300);
-        $('img').width(300);
-
+function Product(filePath, title, keyWords, description, horns) {
+  this.filePath = filePath;
+  this.title = title;
+  this.keyWords = keyWords;
+  this.description = description;
+  this.horns = horns;
+  productArr.push(this);
+  if (keywordArr.includes(this.keyWords) === false) {
+    keywordArr.push(this.keyWords);
+  }
 }
-// console.log(keywordArr);
 
-Product.prototype.renderOption = function(i){
-    let option = $("<option></option>").text(i);
-    $('#filter').append(option);
+Product.prototype.render = function () {
+  let template = $('#helpRender').html();
+  let myHtml = Mustache.render(template,this);
+  return myHtml;
+}
 
+Product.prototype.renderOption = function (i) {
+  let option = $('<option></option>').text(i);
+  $('#filter').append(option);
 }
 // Product.prototype.selectRender = function(){
 //     $('#showImage div').hide();
@@ -69,19 +95,53 @@ Product.prototype.renderOption = function(i){
 //     if (vari === )
 // }
 
-Product.prototype.event1=function(){
-    $("select").change(function(){
-let vari= $("select").val();
-// console.log(vari);
-// var selet1 =productArr.map((n)=> n.keyWords);
-var select2 =productArr.filter((n) => n.keyWords === vari);
-$('#showImage div').hide();
-select2.forEach(value => value.render() );
-console.log(select2);
-// console.log(selet1);
-if(vari === 'Filter By Keyword'){
-$('#showImage div').show();
+Product.prototype.event1 = function () {
+  $('#filter').change(function () {
+    let choose = $('#filter').val();
+    let select2 = productArr.filter((n) => n.keyWords === choose);
+    $('#showImage').empty('');
+    select2.forEach(value => {
+      let renderedObj = value.render()
+      $('#showImage').append(renderedObj);
 
+    }
+    );
+    if (choose === 'Filter By Keywords') {
+      productArr.forEach(val =>{
+        let renderedObj = val.render()
+        $('#showImage').append(renderedObj);
+      } )
+    }
+  });
 }
-    });
+Product.prototype.event2 = function () {
+  $('#sort').change(function () {
+    let choose = $('#sort').val();
+    if (choose === 'text') {
+      productArr.sort((a, b) => {
+        if (a.title < b.title){
+          return -1;
+        }
+        else {
+          return 1;
+        }
+      });
+
+      $('#showImage div').hide();
+      productArr.forEach(val => {
+        let renderedObj = val.render()
+        $('#showImage').append(renderedObj);
+      });
+    }
+    else if (choose === 'num') {
+      productArr.sort((a, b) => {
+        return a.horns - b.horns;
+      });
+      $('#showImage div').hide();
+      productArr.forEach(val => {
+        let renderedObj = val.render()
+        $('#showImage').append(renderedObj);
+      });
+    }
+  });
 }
