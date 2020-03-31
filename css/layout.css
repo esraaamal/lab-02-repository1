@@ -14,10 +14,12 @@ img {
     justify-content: space-around;
 }
 #page {
-    margin: -2% 0 2% 48%;
+    position: absolute;
+    top: 2.5%;
+    left: 64%;
 }
     button {
-        padding: 6px;
+        padding: 4px;
         margin-left: 15px;
         cursor: pointer;
         border: 1px solid gray;
