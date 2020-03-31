@@ -23,7 +23,7 @@ img {
         margin-left: 15px;
         cursor: pointer;
         border: 1px solid gray;
-        border-radius: 6px;
+        
         box-shadow: 1px 1px 9px grey;
     }
     button:hover {

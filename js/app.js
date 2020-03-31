@@ -112,6 +112,7 @@ Product.prototype.event2 = function () {
   $('#sort').change(function () {
     let choose = $('#sort').val();
     if (choose === 'text') {
+      
       productArr.sort((a, b) => {
         if (a.title < b.title){
           return -1;
