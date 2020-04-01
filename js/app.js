@@ -9,9 +9,11 @@ $(function () {
   $('#page').on('click',function(event){
     let userClick = event.target.id;
     if(userClick === 'pageOne'){
+      
       renderFirstTime();
     }
     else if(userClick === 'pageTwo'){
+    
       renderPageTwo();
     }
   })
@@ -109,7 +111,8 @@ Product.prototype.event1 = function () {
   });
 }
 Product.prototype.event2 = function () {
-  $('#sort').change(function () {
+
+  $('#sort').on('change',function () {
     let choose = $('#sort').val();
     if (choose === 'text') {
       
@@ -138,5 +141,7 @@ Product.prototype.event2 = function () {
         $('#showImage').append(renderedObj);
       });
     }
+  
   });
+
 }
